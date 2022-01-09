@@ -5,10 +5,11 @@ import
     "log"
     "net/http"
     "os"
+    "strings"
 )
 //参考https://www.topgoer.com/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/http%E7%BC%96%E7%A8%8B.html
 
-func myHandle(w http.ResponseWriter, r *http.Request){
+func myHandle(w http.ResponseWriter, r *http.Request) {
   //w: 写给客户端的数据内容
   w.Write([]byte("This is a http web server."))
 
@@ -34,10 +35,10 @@ func myHandle(w http.ResponseWriter, r *http.Request){
 
  //Server 端记录访问日志包括客户端 IP，HTTP 返回码，输出到 server 端的标准输出
  //RemoteAddr在负载均衡时是LB的地址，需从其它字段获取真实IP
- log.Printf("Clent Real IP: %s, http return code:%s",getClientIP(r),http.statusOK)
- w.WriteHeader(http.StatusOK)
+ log.Printf("Clent Real IP: %s, http return code:%d",getClientIP(r),http.StatusOK)
+ //w.WriteHeader(http.StatusOK)
 
-  return ""
+  //return ""
 }
 
 func healthz(w http.ResponseWriter, r *http.Request) {
@@ -47,9 +48,9 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 
 }
 func getClientIP(r *http.Request) string{
-  ip := r.Header.Get(key:"X-REAL-IP")
+  ip := r.Header.Get("X-REAL-IP")
   if "" == ip {
-    ip = string.Split(r.RemoteAddr,":")[0]
+    ip = strings.Split(r.RemoteAddr,":")[0]
   }
 
   return ip
@@ -59,11 +60,11 @@ func main () {
     //注册回调函数，该函数在客户端访问服务器时，自动被调用
     //http.HandleFunc("/", myHandle)
     mux := http.NewServeMux()
-    mux.HandleFunc(pattern: "/",myHandle)
-    mux.HandleFunc(pattern: "/healthz",healthz)
+    mux.HandleFunc("/",myHandle)
+    mux.HandleFunc("/healthz",healthz)
 
     //绑定服务器监听地址
-    if err := http.ListenAndServe(addr:"127.0.0.1:8080", mux); err != nil {
+    if err := http.ListenAndServe("127.0.0.1:8880", mux); err != nil {
       log.Fatalf("ListenAndServe Failed: %s\n", err.Error())
     }
 }
