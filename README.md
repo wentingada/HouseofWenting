@@ -7,7 +7,7 @@ server.go. --20220109
  3.Server 端记录访问日志包括客户端 IP，HTTP 返回码，输出到 server 端的标准输出
  4.当访问 localhost/healthz 时，应返回 200
  
-multiplePC.go --20220109
+multiplepc.go --20220109
 基于 Channel 编写一个简单的多线程生产者消费者模型：
 
 队列：
